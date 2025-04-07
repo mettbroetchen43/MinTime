@@ -9,7 +9,6 @@ var config = ConfigFile.new()
 const CONFIG_PATH = "user://app_settings.cfg"
 
 @onready var time_label: Label = $VBoxContainer/Time
-@onready var am_pm: Label = $VBoxContainer/AmPM
 @onready var date_label: Label = $Date
 @onready var settings: Panel = $Settings
 @onready var about: Panel = $Settings/About
@@ -46,9 +45,13 @@ func toggle_menu():
 	else:
 		settings.visible = false
 	
+	
+func getCurrentTime():
+	return Time.get_time_dict_from_system()
+
 func time_calc():
 	# gets the dictionary of current time from the system
-	var current_time = Time.get_time_dict_from_system()
+	var current_time = getCurrentTime()
 	#var current_time = Time.get_time_string_from_system()
 	
 	var hours = current_time.hour
@@ -62,25 +65,11 @@ func time_calc():
 	if minutes < 10:
 		minutes = "0" + str(minutes)
 	
-	# converts the time to 12 hour format by substracting the current hour (24 hour format)
-	# to 12
-	#print(seconds)
-	if hours == 0:
-		hours = 12
-		time_label.text = str(hours) + ":" + str(minutes) + ":" + str(seconds)
-		am_pm.text = "AM"
-		date_update.emit()
-
-	elif hours < 12:
-		time_label.text = str(hours) + ":" + str(minutes) + ":" + str(seconds)
-		am_pm.text = "AM"
-	elif hours == 12:
-		time_label.text = str(hours) + ":" + str(minutes) + ":" + str(seconds)
-		am_pm.text = "PM"
-	else:
-		hours -= 12
-		time_label.text = str(hours) + ":" + str(minutes) + ":" + str(seconds)
-		am_pm.text = "PM"
+	if hours < 10:
+		hours = "0" + str(hours)
+		
+	time_label.text = str(hours) + ":" + str(minutes) + ":" + str(seconds)
+	date_update.emit()
 
 func date():
 	# gets the dictionary of the current date fromt the system
